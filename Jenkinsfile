@@ -6,7 +6,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'NODE_VERSION', choices: ['22.13'], description: 'Node.js Version')
+        choice(name: 'NODE_VERSION', choices: ['18.18'], description: 'Node.js Version')
         choice(name: 'DB_TYPE', choices: ['postgresql', 'mysql'], description: 'Database Type')
     }
 
