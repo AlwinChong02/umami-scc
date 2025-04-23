@@ -5,12 +5,12 @@ export default {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   reporters: [
-    'default', // Default Jest reporter
+    'default',
     [
-      'jest-html-reporter', // Adding HTML reporter
+      'jest-html-reporter',
       {
-        pageTitle: 'Test Report', // Title of the report
-        outputPath: 'test-report.html', // Path where the report will be saved
+        pageTitle: 'Test Report',
+        outputPath: 'test-report.html',
       },
     ],
   ],
