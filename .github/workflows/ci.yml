@@ -16,9 +16,9 @@ jobs:
     strategy:
       matrix:
         include:
-        - node-version: 18.18
+        - node-version: 22.13
           db-type: postgresql
-        - node-version: 18.18
+        - node-version: 22.13
           db-type: mysql
 
     steps:
