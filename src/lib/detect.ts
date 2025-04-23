@@ -70,7 +70,7 @@ export function getDevice(screen: string, os: string) {
   }
 }
 
-function getRegionCode(country: string, region: string) {
+export function getRegionCode(country: string, region: string) {
   if (!country || !region) {
     return undefined;
   }
@@ -78,7 +78,7 @@ function getRegionCode(country: string, region: string) {
   return region.includes('-') ? region : `${country}-${region}`;
 }
 
-function decodeHeader(s: string | undefined | null): string | undefined | null {
+export function decodeHeader(s: string | undefined | null): string | undefined | null {
   if (s === undefined || s === null) {
     return s;
   }

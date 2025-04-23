@@ -44,3 +44,43 @@ test('stringToColor', () => {
   expect(format.stringToColor('hello')).toBe('#d218e9');
   expect(format.stringToColor('goodbye')).toBe('#11e956');
 });
+
+test('formats USD currency in en-US locale', () => {
+  expect(format.formatCurrency(1000, 'USD', 'en-US')).toBe('$1,000.00');
+});
+
+test('formats EUR currency in de-DE locale', () => {
+  expect(format.formatCurrency(1000, 'EUR', 'de-DE')).toBe('1.000,00 €');
+});
+
+test('formats JPY currency in ja-JP locale', () => {
+  expect(format.formatCurrency(5000, 'JPY', 'ja-JP')).toBe('￥5,000');
+});
+
+test('falls back to USD if given invalid currency code', () => {
+  expect(format.formatCurrency(1000, 'INVALID')).toBe('$1,000.00');
+});
+
+test('defaults to en-US if locale is not provided', () => {
+  expect(format.formatCurrency(200, 'USD')).toBe('$200.00');
+});
+
+test('formats value in billions with "b" suffix', () => {
+  expect(format.formatLongCurrency(1500000000, 'USD')).toBe('$1.50b');
+});
+
+test('formats value in millions with "m" suffix', () => {
+  expect(format.formatLongCurrency(2500000, 'USD')).toBe('$2.50m');
+});
+
+test('formats value in thousands with "k" suffix', () => {
+  expect(format.formatLongCurrency(7200, 'USD')).toBe('$7.20k');
+});
+
+test('formats value less than 1000 normally', () => {
+  expect(format.formatLongCurrency(999, 'USD')).toBe('$999.00');
+});
+
+test('handles zero correctly', () => {
+  expect(format.formatLongCurrency(0, 'USD')).toBe('$0.00');
+});
