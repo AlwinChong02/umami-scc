@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/AlwinChong02/umami-scc.git'
+                git branch: 'master', url: 'https://github.com/WeiSengChung/umami.git'
             }
         }
 
