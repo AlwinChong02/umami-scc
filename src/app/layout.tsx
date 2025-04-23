@@ -9,6 +9,9 @@ import '@/styles/index.css';
 import '@/styles/variables.css';
 
 export default function ({ children }) {
+  /**
+   * Hello World!
+   */
   return (
     <html lang="en" data-scroll="0">
       <head>
