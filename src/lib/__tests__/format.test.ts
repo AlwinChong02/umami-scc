@@ -9,6 +9,13 @@ test('parseTime', () => {
     seconds: 1,
     ms: 0,
   });
+  expect(format.parseTime(1.5)).toEqual({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 1,
+    ms: 500,
+  });
 });
 
 test('formatTime', () => {
