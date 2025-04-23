@@ -19,16 +19,21 @@ pipeline {
 
         stage('Set Node Version') {
             steps {
-                script {
-                    // Assumes nvm is installed or Node.js is pre-installed via Jenkins tool
-                    env.PATH = "${tool name: "nodejs-${params.NODE_VERSION}", type: 'NodeJSInstallation'}/bin:${env.PATH}"
-                }
+                bat '''
+                if not exist "%USERPROFILE%\nodejs" (
+                  curl -o nodejs.zip https://nodejs.org/dist/v%NODE_VERSION%/node-v%NODE_VERSION%-win-x64.zip
+                  powershell -Command "Expand-Archive nodejs.zip -DestinationPath %USERPROFILE%\nodejs"
+                  move %USERPROFILE%\nodejs\node-v%NODE_VERSION%-win-x64 %USERPROFILE%\nodejs\node-v%NODE_VERSION%
+                )
+                set PATH=%USERPROFILE%\nodejs\node-v%NODE_VERSION%;%PATH%
+                node --version
+                '''
             }
         }
 
         stage('Install Yarn') {
             steps {
-                sh 'npm install --global yarn'
+                bat 'npm install --global yarn'
             }
         }
 
