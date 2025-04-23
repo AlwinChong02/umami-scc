@@ -12,7 +12,8 @@
 }
 
 .title {
-  font-size: 24px;
+  font-size: 80px;
+  font-family: 'Courier New', Courier, monospace;
   font-weight: 700;
   text-align: center;
   margin: 30px 0;
