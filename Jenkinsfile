@@ -1,23 +1,31 @@
 pipeline {
     agent any
     stages {
-        stage('Setup Yarn Path') {
+        stage('Setup Package Manager') {
             steps {
                 script {
-                    // Windows-specific approach
-                    def yarnPath = bat(
-                        script: '@echo off && for /f "tokens=*" %%i in (\'where yarn\') do @echo %%i',
+                    // Check if yarn is available
+                    def yarnExists = bat(
+                        script: '@where yarn 2>nul && echo YARN_FOUND || echo YARN_NOT_FOUND',
                         returnStdout: true
-                    ).trim()
+                    ).trim().contains('YARN_FOUND')
                     
-                    // Check if yarn was found
-                    if (yarnPath) {
-                        // Extract the directory path and add to PATH
-                        def yarnDir = yarnPath.substring(0, yarnPath.lastIndexOf('\\'))
-                        env.PATH = "${yarnDir};${env.PATH}"
-                        echo "Windows yarn path added to PATH: ${yarnDir}"
+                    if (yarnExists) {
+                        echo "Using yarn as package manager"
+                        env.PACKAGE_MANAGER = 'yarn'
                     } else {
-                        error "Yarn not found in PATH. Please ensure yarn is installed and available."
+                        // Fall back to npm if yarn isn't available
+                        def npmExists = bat(
+                            script: '@where npm 2>nul && echo NPM_FOUND || echo NPM_NOT_FOUND',
+                            returnStdout: true
+                        ).trim().contains('NPM_FOUND')
+                        
+                        if (npmExists) {
+                            echo "Yarn not found. Falling back to npm"
+                            env.PACKAGE_MANAGER = 'npm'
+                        } else {
+                            error "Neither yarn nor npm found. Please install Node.js with npm"
+                        }
                     }
                 }
             }
@@ -25,7 +33,13 @@ pipeline {
        
         stage('Install Dependencies') {
             steps {
-                bat 'yarn install'
+                script {
+                    if (env.PACKAGE_MANAGER == 'yarn') {
+                        bat 'yarn install'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
             }
         }
         stage('Prepare Environment') {
@@ -35,12 +49,24 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'yarn build'
+                script {
+                    if (env.PACKAGE_MANAGER == 'yarn') {
+                        bat 'yarn build'
+                    } else {
+                        bat 'npm run build'
+                    }
+                }
             }
         }
         stage('Run Tests') {
             steps {
-                bat 'yarn test'
+                script {
+                    if (env.PACKAGE_MANAGER == 'yarn') {
+                        bat 'yarn test'
+                    } else {
+                        bat 'npm test'
+                    }
+                }
             }
         }
     }
@@ -51,6 +77,9 @@ pipeline {
         success {
             echo "Build succeeded"
             deleteDir()
+        }
+        failure {
+            echo "Build failed"
         }
     }
 }
