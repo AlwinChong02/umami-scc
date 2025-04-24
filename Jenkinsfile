@@ -1,75 +1,59 @@
 pipeline {
     agent any
+    
+    environment {
+        // Define Node.js version to install
+        NODE_VERSION = '18.18'  // LTS version that's stable
+        NODE_INSTALLER = 'node-v${NODE_VERSION}-x64.msi'
+        NODE_URL = "https://nodejs.org/dist/v${NODE_VERSION}/${NODE_INSTALLER}"
+        TEMP_DIR = "${WORKSPACE}\\temp"
+    }
+    
     stages {
-        stage('Check Node and Install Yarn') {
+        stage('Setup Environment') {
             steps {
                 script {
-                    // Check if Node.js is installed
-                    def nodeExists = bat(
-                        script: '@node --version >nul 2>&1 && echo NODE_FOUND || echo NODE_NOT_FOUND',
+                    // Create temporary directory
+                    bat "mkdir ${TEMP_DIR} || echo Directory already exists"
+                    
+                    // Check if Node.js is already installed
+                    def nodeInstalled = bat(
+                        script: '@node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
                         returnStdout: true
-                    ).trim().contains('NODE_FOUND')
+                    ).trim().contains('Node_Installed')
                     
-                    if (!nodeExists) {
-                        error "Node.js is not installed. Please install Node.js before proceeding."
-                    }
-                    
-                    // Get Node.js version for later use
-                    def nodeVersion = bat(
-                        script: '@node --version',
-                        returnStdout: true
-                    ).trim()
-                    env.NODE_VERSION = nodeVersion
-                    
-                    // Check if npm is installed
-                    def npmExists = bat(
-                        script: '@npm --version >nul 2>&1 && echo NPM_FOUND || echo NPM_NOT_FOUND',
-                        returnStdout: true
-                    ).trim().contains('NPM_FOUND')
-                    
-                    if (!npmExists) {
-                        error "npm is not installed. Please install npm before proceeding."
-                    }
-                    
-                    // Check if yarn is installed
-                    def yarnExists = bat(
-                        script: '@yarn --version >nul 2>&1 && echo YARN_FOUND || echo YARN_NOT_FOUND',
-                        returnStdout: true
-                    ).trim().contains('YARN_FOUND')
-                    
-                    if (!yarnExists) {
-                        echo "Yarn not found. Installing yarn globally..."
-                        bat 'npm install -g yarn'
+                    if (!nodeInstalled) {
+                        echo "Downloading and installing Node.js ${NODE_VERSION}..."
+                        
+                        // Download Node.js installer
+                        bat "curl -o ${TEMP_DIR}\\${NODE_INSTALLER} ${NODE_URL}"
+                        
+                        // Install Node.js silently (will also install npm)
+                        bat "msiexec /i ${TEMP_DIR}\\${NODE_INSTALLER} /qn"
+                        
+                        // Allow time for installation to complete
+                        sleep 30
+                        
+                        // Add Node.js to PATH for this session
+                        env.PATH = "C:\\Program Files\\nodejs;${env.PATH}"
                     } else {
-                        echo "Yarn is already installed."
+                        echo "Node.js is already installed"
                     }
                     
-                    // Add npm global bin directory to PATH to ensure yarn is accessible
-                    def npmBinPath = bat(
-                        script: '@npm config get prefix',
-                        returnStdout: true
-                    ).trim()
+                    // Verify Node.js and npm installation
+                    bat 'node --version'
+                    bat 'npm --version'
                     
-                    // Extract path from multiline output
-                    def lines = npmBinPath.split('\n')
-                    for (line in lines) {
-                        if (line.contains('\\')) {
-                            npmBinPath = line.trim()
-                            break
-                        }
-                    }
+                    // Install yarn globally
+                    echo "Installing yarn globally..."
+                    bat 'npm install -g yarn'
                     
-                    // Add the npm bin directory to PATH
-                    def npmBinDir = "${npmBinPath}\\node_modules\\.bin;${npmBinPath}"
-                    env.PATH = "${npmBinDir};${env.PATH}"
-                    echo "Added npm global bin directory to PATH: ${npmBinDir}"
-                    
-                    // Show final yarn path for debugging
-                    bat 'where yarn'
+                    // Verify yarn installation
+                    bat 'yarn --version'
                 }
             }
         }
-       
+        
         stage('Install Dependencies') {
             steps {
                 bat 'yarn install'
@@ -97,7 +81,16 @@ pipeline {
     
     post {
         always {
-            echo "Build completed using Node.js ${env.NODE_VERSION}"
+            script {
+                def nodeVersion = bat(
+                    script: '@node --version',
+                    returnStdout: true
+                ).trim()
+                echo "Build completed using Node.js ${nodeVersion}"
+                
+                // Clean up temporary files
+                bat "rmdir /s /q ${TEMP_DIR} || echo No temp directory to clean"
+            }
         }
         success {
             echo "Build succeeded"
