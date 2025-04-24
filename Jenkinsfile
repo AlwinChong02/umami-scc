@@ -1,11 +1,21 @@
 pipeline {
     agent any
 
-    // environment {
-    //     PATH = "C:\\Users\\user\\AppData\\Roaming\\npm;${env.PATH}"
-    // }
-
     stages {
+
+        stage('Setup Yarn Path') {
+            steps {
+                script {
+                    def yarnPath = bat(
+                        script: 'for /f "tokens=*" %i in (\'where yarn\') do @echo %i',
+                        returnStdout: true
+                    ).trim()
+
+                    env.PATH = "${yarnPath.substring(0, yarnPath.lastIndexOf('\\'))};${env.PATH}"
+                }
+            }
+        }
+        
         stage('Install Dependencies') {
             steps {
                 bat 'yarn install'
