@@ -14,6 +14,13 @@ pipeline {
                         error "Node.js is not installed. Please install Node.js before proceeding."
                     }
                     
+                    // Get Node.js version for later use
+                    def nodeVersion = bat(
+                        script: '@node --version',
+                        returnStdout: true
+                    ).trim()
+                    env.NODE_VERSION = nodeVersion
+                    
                     // Check if npm is installed
                     def npmExists = bat(
                         script: '@npm --version >nul 2>&1 && echo NPM_FOUND || echo NPM_NOT_FOUND',
@@ -90,7 +97,7 @@ pipeline {
     
     post {
         always {
-            echo "Build completed using Node.js $(node --version)"
+            echo "Build completed using Node.js ${env.NODE_VERSION}"
         }
         success {
             echo "Build succeeded"
