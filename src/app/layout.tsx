@@ -13,7 +13,7 @@ export default function ({ children }) {
    * Hello World!
    */
   /**
-   * Trigger jenkins
+   * Trigger jenkins, second try
    */
   return (
     <html lang="en" data-scroll="0">
