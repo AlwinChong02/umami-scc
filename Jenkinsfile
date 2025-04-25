@@ -77,6 +77,14 @@ pipeline {
                 bat 'yarn test'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying application..."
+                // Add deployment steps here
+                bat 'docker-compose up -d'
+            }
+        }
     }
     
     post {
