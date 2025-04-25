@@ -4880,6 +4880,11 @@ date-fns@^2.23.0, date-fns@^2.29.3:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
+dateformat@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.2.tgz#9a4df4bff158ac2f34bc637abdb15471607e1659"
+  integrity sha512-EelsCzH0gMC2YmXuMeaZ3c6md1sUJQxyb1XXc4xaisi/K6qKukqZhKPrEQyRkdNIncgYyLoDTReq0nNyuKerTg==
+
 dayjs@^1.10.4:
   version "1.11.13"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
@@ -7161,6 +7166,19 @@ jest-haste-map@^29.7.0:
     walker "^1.0.8"
   optionalDependencies:
     fsevents "^2.3.2"
+
+jest-html-reporter@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/jest-html-reporter/-/jest-html-reporter-4.1.0.tgz#7ae094a3ac24a41703c925f94af5d6d4a855ac28"
+  integrity sha512-hB/vBlNBAbH0/L9UiV29uWNhyk+YrSMnu/0vKuhZGrdiiZgpfKBoyojJjskIJbOWCWh2t/3/QyRU2nrFvhqGpw==
+  dependencies:
+    "@jest/reporters" "^29.7.0"
+    "@jest/test-result" "^29.7.0"
+    "@jest/types" "^29.6.3"
+    dateformat "3.0.2"
+    mkdirp "^1.0.3"
+    strip-ansi "6.0.1"
+    xmlbuilder "15.0.0"
 
 jest-leak-detector@^29.7.0:
   version "29.7.0"
@@ -10335,7 +10353,7 @@ string.prototype.trimstart@^1.0.8:
   dependencies:
     ansi-regex "^5.0.1"
 
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+strip-ansi@6.0.1, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -11205,6 +11223,11 @@ write-json-file@^4.3.0:
     make-dir "^3.0.0"
     sort-keys "^4.0.0"
     write-file-atomic "^3.0.0"
+
+xmlbuilder@15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-15.0.0.tgz#de9a078a0b82ef0c6da5c76e58813a879eec31ec"
+  integrity sha512-KLu/G0DoWhkncQ9eHSI6s0/w+T4TM7rQaLhtCaL6tORv8jFlJPlnGumsgTcGfYeS1qZ/IHqrvDG7zJZ4d7e+nw==
 
 y18n@^5.0.5:
   version "5.0.8"
