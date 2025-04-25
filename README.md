@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://content.umami.is/website/images/umami-logo.png" alt="Umami Logo" width="100">
 </p>
-test
+testtest
 <h1 align="center">Umami</h1>
 
 <p align="center">
@@ -142,6 +142,7 @@ docker compose up --force-recreate -d
     <img src="https://img.shields.io/badge/Discord--blue?style=social&logo=discord" alt="Discord" />
   </a>
 </p>
+<p hidden>test</p>
 
 [release-shield]: https://img.shields.io/github/release/umami-software/umami.svg
 [releases-url]: https://github.com/umami-software/umami/releases

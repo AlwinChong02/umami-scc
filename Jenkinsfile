@@ -1,59 +1,111 @@
 pipeline {
     agent any
-
+    
     environment {
-        SKIP_DB_CHECK = '1'
+        // Define Node.js version to install
+        NODE_VERSION = '18.18'  // LTS version that's stable
+        NODE_INSTALLER = 'node-v${NODE_VERSION}-x64.msi'
+        NODE_URL = "https://nodejs.org/dist/v${NODE_VERSION}/${NODE_INSTALLER}"
+        TEMP_DIR = "${WORKSPACE}\\temp"
     }
-
-    parameters {
-        choice(name: 'NODE_VERSION', choices: ['18.18'], description: 'Node.js Version')
-        choice(name: 'DB_TYPE', choices: ['postgresql', 'mysql'], description: 'Database Type')
-    }
-
+    
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'master', url: 'https://github.com/AlwinChong02/umami-scc.git'
-            }
-        }
-
-        stage('Set Node Version') {
+        stage('Setup Environment') {
             steps {
                 script {
-                    // Assumes nvm is installed or Node.js is pre-installed via Jenkins tool
-                    env.PATH = "${tool name: "nodejs-${params.NODE_VERSION}", type: 'NodeJSInstallation'}/bin:${env.PATH}"
+                    // Create temporary directory
+                    bat "mkdir ${TEMP_DIR} || echo Directory already exists"
+                    
+                    // Check if Node.js is already installed
+                    def nodeInstalled = bat(
+                        script: 'node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
+                        returnStdout: true
+                    ).trim().contains('Node_Installed')
+                    
+                    if (!nodeInstalled) {
+                        echo "Downloading and installing Node.js ${NODE_VERSION}..."
+                        
+                        // Download Node.js installer
+                        bat "curl -o ${TEMP_DIR}\\${NODE_INSTALLER} ${NODE_URL}"
+                        
+                        // Install Node.js silently (will also install npm)
+                        bat "msiexec /i ${TEMP_DIR}\\${NODE_INSTALLER} /qn"
+                        
+                        // Allow time for installation to complete
+                        sleep 30
+                        
+                        // Add Node.js to PATH for this session
+                        env.PATH = "C:\\Program Files\\nodejs;${env.PATH}"
+                    } else {
+                        echo "Node.js is already installed"
+                    }
+                    
+                    // Verify Node.js and npm installation
+                    bat 'node --version'
+                    bat 'npm --version'
+                    
+                    // Install yarn globally
+                    echo "Installing yarn globally..."
+                    bat 'npm install -g yarn'
+                    
+                    // Verify yarn installation
+                    bat 'yarn --version'
                 }
             }
         }
-
-        stage('Install Yarn') {
-            steps {
-                sh 'npm install --global yarn'
-            }
-        }
-
+        
         stage('Install Dependencies') {
             steps {
-                sh 'yarn install'
+                bat 'yarn install'
             }
         }
-
-        stage('Run Tests') {
+        
+        stage('Prepare Environment') {
             steps {
-                sh 'yarn test'
+                writeFile file: '.env', text: 'DATABASE_URL=mysql://root:@localhost:3306/umami'
             }
         }
-
+        
         stage('Build') {
             steps {
-                sh 'yarn build'
+                bat 'yarn build'
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                bat 'yarn test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying application..."
+                // Add deployment steps here
+                bat 'docker-compose up -d'
             }
         }
     }
-
+    
     post {
         always {
-            echo "Build completed for Node.js ${params.NODE_VERSION} with DB: ${params.DB_TYPE}"
+            script {
+                def nodeVersion = bat(
+                    script: 'node --version',
+                    returnStdout: true
+                ).trim()
+                echo "Build completed using Node.js ${nodeVersion}"
+                
+                // Clean up temporary files
+                bat "rmdir /s /q ${TEMP_DIR} || echo No temp directory to clean"
+            }
+        }
+        success {
+            echo "Build succeeded"
+            deleteDir()
+        }
+        failure {
+            echo "Build failed"
         }
     }
 }
