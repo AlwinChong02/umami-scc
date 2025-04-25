@@ -18,7 +18,7 @@ pipeline {
                     
                     // Check if Node.js is already installed
                     def nodeInstalled = bat(
-                        script: '@node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
+                        script: 'node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
                         returnStdout: true
                     ).trim().contains('Node_Installed')
                     
@@ -83,7 +83,7 @@ pipeline {
         always {
             script {
                 def nodeVersion = bat(
-                    script: '@node --version',
+                    script: 'node --version',
                     returnStdout: true
                 ).trim()
                 echo "Build completed using Node.js ${nodeVersion}"
