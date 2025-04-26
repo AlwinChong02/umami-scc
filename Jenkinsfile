@@ -10,49 +10,49 @@ pipeline {
     }
     
     stages {
-        // stage('Setup Environment') {
-        //     steps {
-        //         script {
-        //             // Create temporary directory
-        //             bat "mkdir ${TEMP_DIR} || echo Directory already exists"
+        stage('Setup Environment') {
+            steps {
+                script {
+                    // Create temporary directory
+                    bat "mkdir ${TEMP_DIR} || echo Directory already exists"
                     
-        //             // Check if Node.js is already installed
-        //             def nodeInstalled = bat(
-        //                 script: 'node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
-        //                 returnStdout: true
-        //             ).trim().contains('Node_Installed')
+                    // Check if Node.js is already installed
+                    def nodeInstalled = bat(
+                        script: 'node --version >nul 2>&1 && echo Node_Installed || echo Node_Missing',
+                        returnStdout: true
+                    ).trim().contains('Node_Installed')
                     
-        //             if (!nodeInstalled) {
-        //                 echo "Downloading and installing Node.js ${NODE_VERSION}..."
+                    if (!nodeInstalled) {
+                        echo "Downloading and installing Node.js ${NODE_VERSION}..."
                         
-        //                 // Download Node.js installer
-        //                 bat "curl -o ${TEMP_DIR}\\${NODE_INSTALLER} ${NODE_URL}"
+                        // Download Node.js installer
+                        bat "curl -o ${TEMP_DIR}\\${NODE_INSTALLER} ${NODE_URL}"
                         
-        //                 // Install Node.js silently (will also install npm)
-        //                 bat "msiexec /i ${TEMP_DIR}\\${NODE_INSTALLER} /qn"
+                        // Install Node.js silently (will also install npm)
+                        bat "msiexec /i ${TEMP_DIR}\\${NODE_INSTALLER} /qn"
                         
-        //                 // Allow time for installation to complete
-        //                 sleep 30
+                        // Allow time for installation to complete
+                        sleep 30
                         
-        //                 // Add Node.js to PATH for this session
-        //                 env.PATH = "C:\\Program Files\\nodejs;${env.PATH}"
-        //             } else {
-        //                 echo "Node.js is already installed"
-        //             }
+                        // Add Node.js to PATH for this session
+                        env.PATH = "C:\\Program Files\\nodejs;${env.PATH}"
+                    } else {
+                        echo "Node.js is already installed"
+                    }
                     
-        //             // Verify Node.js and npm installation
-        //             bat 'node --version'
-        //             bat 'npm --version'
+                    // Verify Node.js and npm installation
+                    bat 'node --version'
+                    bat 'npm --version'
                     
-        //             // Install yarn globally
-        //             echo "Installing yarn globally..."
-        //             bat 'npm install -g yarn'
+                    // Install yarn globally
+                    echo "Installing yarn globally..."
+                    bat 'npm install -g yarn'
                     
-        //             // Verify yarn installation
-        //             bat 'yarn --version'
-        //         }
-        //     }
-        // }
+                    // Verify yarn installation
+                    bat 'yarn --version'
+                }
+            }
+        }
         
         stage('Install Dependencies') {
             steps {
