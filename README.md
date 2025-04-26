@@ -72,7 +72,7 @@ mysql://username:mypassword@localhost:3306/mydb
 ```bash
 yarn build
 ```
-test
+
 *The build step will create tables in your database if you are installing for the first time. It will also create a login user with username **admin** and password **umami**.*
 
 ### Start the Application
